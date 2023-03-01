@@ -1,4 +1,4 @@
-# ALS prompt enigneer
+# prompt enigneer for ALS online post analysis
 
 
 
@@ -23,4 +23,6 @@ docker compose up
 ## Prepare data
 * run ```load_data.py``` to download the data from mongodb to a local pickle file
 * run ```load_to_milvus.py``` to load the downloaded data into milvus
+  
+## Start semantic search interface
 * run ```python -m streamlit run analyze_als.py``` and it will open the semantic search interface
