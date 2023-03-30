@@ -21,7 +21,6 @@ try:
     collection = Collection(ALS_COLLECTION_NAME)
     collection.drop()
 except:
-
     pass
 ## creat schema
 fields = [
