@@ -27,8 +27,10 @@ docker compose up
 ## Start semantic search interface
 * run ```python -m streamlit run analyze_als.py``` and it will open the semantic search interface
 
+# Scraping PubMed (PMC free full-text) to load to the knowledge base
+* run ```python run crawl_pubmed.py``` and it will start crawling the pdfs and load them to the knowledge_base/pdfs
 
-# knowledge base
+# Knowledge base
 ## Prepare data
 * run ```pip install -r requirements.txt``` to install new dependecies
 * create a folder called ```pdfs``` inside knowledge_base, put the pdf files you want to index inside it
