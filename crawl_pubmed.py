@@ -14,7 +14,7 @@ def search(query):
     Entrez.email = 'hah90@pitt.edu'
     handle = Entrez.esearch(db='pubmed',
                             sort='relevance',
-                            retmax='10',
+                            retmax='1000',
                             retmode='xml',
                             term=query)
     results = Entrez.read(handle)
@@ -73,9 +73,25 @@ def get_papers_summary(id_list):
     return paper_arr
 
 
+# def load_pdfs_to_knowledge_base(df_summary):
+#     headers = {
+#         "User-Agent": "Chrome/111.0.0.0"
+#     }
+#
+#     for index, df_item in enumerate(df_summary):
+#         if df_item['full_text'] != '':
+#             response = requests.get(df_item['full_text'], headers=headers)
+#             # Save the PDF
+#             if response.status_code == 200:
+#                 with open(f"knowledge_base/pdfs/{index + 1}.pdf", "wb") as f:
+#                     f.write(response.content)
+#             else:
+#                 print(response.status_code)
+
+
 async def load_pdfs_to_knowledge_base(df_summary):
-    max_tasks = 5
-    max_time = 5
+    max_tasks = 10
+    max_time = 100
     tasks = []
     sem = Semaphore(max_tasks)
 
@@ -96,19 +112,25 @@ async def download_one_pdf(df_item, session, index, sem):
     }
     async with sem:
         if df_item['full_text'] != '':
-            async with session.get(df_item['full_text'], headers=headers) as response:
-                content = await response.read()
-            # Save the PDF
-            if response.status == 200:
-                async with aiofiles.open(f"knowledge_base/pdfs/{index + 1}.pdf", "+wb") as f:
-                    await f.write(content)
-            else:
-                print(f"Failed with code {response.status}: {index + 1}.pdf")
+            try:
+                async with session.get(df_item['full_text'], headers=headers) as response:
+                    content = await response.read()
+                # Save the PDF
+                if response.status == 200:
+                    async with aiofiles.open(f"knowledge_base/pdfs/{index + 1}.pdf", "+wb") as f:
+                        await f.write(content)
+                else:
+                    print(f"Failed with code {response.status}: {index + 1}.pdf")
+            except:
+                print(f"Download error")
 
 
+print("--- Crawling started ---")
 start_time = time.time()
 results = search('delirium')
 id_list = results['IdList']
 summary = get_papers_summary(id_list)
+print("--- Summary generated in %s seconds ---" % (time.time() - start_time))
+print("--- Download started ---")
 asyncio.run(load_pdfs_to_knowledge_base(summary))
 print("--- Download completed in %s seconds ---" % (time.time() - start_time))
