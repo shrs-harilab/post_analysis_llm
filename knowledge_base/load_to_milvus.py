@@ -8,6 +8,8 @@ from pymilvus import connections, FieldSchema, DataType, CollectionSchema, Colle
 from sentence_transformers import SentenceTransformer
 
 
+
+
 def load_sources(pdf_rootpath):
     sources = []
     for (_, _, filenames) in os.walk(pdf_rootpath):
@@ -56,14 +58,16 @@ if __name__ == '__main__':
 
     model = SentenceTransformer('all-MiniLM-L6-v2')
 
+    pool = model.start_multi_process_pool()
+
     for batch in tqdm(np.array_split(source_paragraph_pair_list, len(source_paragraph_pair_list) / BATCH_SIZE)):
         ids = [x[0] for x in batch]
         texts = [x[1][:65534] for x in batch]
-
+        model.mul
         collection.insert([
             ids,
             texts,
-            model.encode(texts, normalize_embeddings=True, batch_size=BATCH_SIZE)
+            model.encode_multi_process(texts,normalize_embeddings=True, batch_size=BATCH_SIZE)
         ])
         collection.flush()
 

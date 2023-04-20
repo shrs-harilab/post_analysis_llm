@@ -14,7 +14,7 @@ def search(query):
     Entrez.email = 'hah90@pitt.edu'
     handle = Entrez.esearch(db='pubmed',
                             sort='relevance',
-                            retmax='1000',
+                            retmax='10000',
                             retmode='xml',
                             term=query)
     results = Entrez.read(handle)
@@ -50,7 +50,8 @@ def get_papers_summary(id_list):
     papers = fetch_details(id_list)
     paper_arr = []
     for paper in papers['PubmedArticle']:
-        pm_id = ''.join(paper['MedlineCitation']['PMID'])
+        pm_id = ''.join(paper['MedlineCitation']['PMID'])   
+        print("reach",pm_id)
         pmc_id = get_pmc_id(pm_id)
         try:
             article = {
@@ -70,6 +71,7 @@ def get_papers_summary(id_list):
     paper_df = pd.DataFrame(paper_arr)
     paper_df.index += 1
     paper_df.to_excel('./pubmed_search.xlsx')
+    
     return paper_arr
 
 
