@@ -1,7 +1,7 @@
 import streamlit as st
 from pymilvus import connections, Collection
 from sentence_transformers import SentenceTransformer
-from knowledge_base.create_prompt import create_prompt
+from create_prompt import create_prompt
 import pyperclip
 
 
@@ -46,7 +46,8 @@ def search(text: str, k: int = 5):
         "metric_type": "L2",
         "params": {"nprobe": 100},
     }
-    result = collection.search(vectors_to_search, "embeddings", search_params, limit=k, output_fields=["id", "text"])
+    result = collection.search(vectors_to_search, "embeddings",
+                               search_params, limit=k, output_fields=["id", "text"])
     hits = result[0]
     return hits
 
@@ -54,13 +55,13 @@ def search(text: str, k: int = 5):
 # UI
 
 
-search_query = st.text_area("question", value="What's the best way to generate ALS treatment plan")
-context_text = st.text_area("Context", value="You are a ALZ clinician who knows how to generate ALS treatment plan")
+search_query = st.text_area(
+    "question", value="What's the best way to generate ALS treatment plan")
+context_text = st.text_area(
+    "Context", value="You are a ALZ clinician who knows how to generate ALS treatment plan")
 
 
-
-
-col1, col2= st.columns(2)
+col1, col2 = st.columns(2)
 with col1:
     prompt_size = st.number_input("prompt size", value=5000)
 with col2:
@@ -70,23 +71,22 @@ with col2:
 hits = search(search_query, search_result_size)
 
 
-
 def create_prompt_from_question(hits):
     sources = [(hit.entity.id, hit.entity.text) for hit in hits]
-    print(sources)
+    # print(sources)
     prompt = create_prompt(search_query, context_text, sources, prompt_size)
     return prompt
 
 
 prompt = create_prompt_from_question(hits)
 
+
 def copy_prompt():
     pyperclip.copy(prompt)
-    print(prompt)
+    # print(prompt)
 
 
-st.button("Copy prompt",on_click=copy_prompt)
+st.button("Copy prompt", on_click=copy_prompt)
 
 
 st.text(prompt)
-
