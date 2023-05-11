@@ -12,3 +12,5 @@ requests
 aiohttp
 aiofiles
 mpire
+biopython
+langchain
