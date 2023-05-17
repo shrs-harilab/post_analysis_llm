@@ -24,39 +24,32 @@ except:
     pass
 ## creat schema
 fields = [
-        FieldSchema(name="id", dtype=DataType.VARCHAR,max_length=128, is_primary=True, auto_id=False),
+        FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True),
         FieldSchema(name="title", dtype=DataType.VARCHAR,max_length=65535),
-        FieldSchema(name="url", dtype=DataType.VARCHAR,max_length=65535),
+        FieldSchema(name="source", dtype=DataType.VARCHAR,max_length=65535),
         FieldSchema(name="text", dtype=DataType.VARCHAR,max_length=65535),
-        FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=384)
+        FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=384)
     ]
 schema = CollectionSchema(fields, "als")
 collection = Collection("als", schema)
 
 data_file = "./AlzConnected.pkl"
 with open(data_file,"rb") as input_file:
-    data = [(k,v) for k,v in pickle.load(input_file).items()]
+    data = np.array([(k,v) for k,v in pickle.load(input_file).items()], dtype=object)
 
 
 for batch in tqdm(np.array_split(data,128)):
-    ids = [x[0] for x in batch]
     titles = [x[1][0]["title"][:65534] for x in batch]
-    embedding_texts = [(x[1][0]["title"] + "\n\n" + x[1][0]["body"])[:65534] for x in batch]
+    sources = [x[0] for x in batch]
     texts = ["\n\n=======\n\n".join([item["body"] for item in x[1]])[:65534] for x in batch]
-
+    embedding_texts = [(x[1][0]["title"] + "\n\n" + x[1][0]["body"])[:65534] for x in batch]
     collection.insert([
-        ids,
         titles,
-        ids,
+        sources,
         texts,
         model.encode(embedding_texts,normalize_embeddings=True,batch_size=32)
     ])
     collection.flush()
-
-
-
-
-
 
 
 index = {
@@ -64,7 +57,7 @@ index = {
     "metric_type": "L2",
     "params": {"nlist": 100},
 }
-collection.create_index("embeddings", index)
+collection.create_index("vector", index)
 
 
 

@@ -52,11 +52,11 @@ if __name__ == '__main__':
         pass
     # creat schema
     fields = [
-        FieldSchema(name="id", dtype=DataType.VARCHAR,
-                    max_length=1024, is_primary=True, auto_id=False),
+        FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True),
+        FieldSchema(name="source", dtype=DataType.VARCHAR, max_length=1024),
         FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=65535),
         # FieldSchema(name="position", dtype=DataType.INT16),
-        FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=384)
+        FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=384)
     ]
     schema = CollectionSchema(fields, COLLECTION_NAME)
     collection = Collection(COLLECTION_NAME, schema)
@@ -70,10 +70,10 @@ if __name__ == '__main__':
     # pool = model.start_multi_process_pool()
 
     for batch in tqdm(np.array_split(source_paragraph_pair_list, len(source_paragraph_pair_list) / BATCH_SIZE)):
-        ids = [x[0] for x in batch]
+        sources = [x[0] for x in batch]
         texts = [x[1][:65534] for x in batch]
         collection.insert([
-            ids,
+            sources,
             texts,
             model.encode(texts, normalize_embeddings=True,
                          batch_size=BATCH_SIZE)
@@ -85,4 +85,4 @@ if __name__ == '__main__':
         "metric_type": "L2",
         "params": {"nlist": 100},
     }
-    collection.create_index("embeddings", index)
+    collection.create_index("vector", index)
