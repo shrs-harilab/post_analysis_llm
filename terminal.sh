@@ -1,0 +1,1 @@
+WORKON_HOME=/hi/hari pipenv shell
