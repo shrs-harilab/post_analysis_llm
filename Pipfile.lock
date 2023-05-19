@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2266c4134359c3c09759c9f3c2b8be5cf9ed179a57d5be994bc93aa7edeebe56"
+            "sha256": "7a5ec2f60c5939fa4cd45ab859c4950746b3916a2f4f1e0deea720b9d1b6e68b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -633,11 +633,11 @@
         },
         "langchain": {
             "hashes": [
-                "sha256:64cc052f3d8a821d76718bf09d6c7c07a8b57324f867bc50e225d2ac8348567a",
-                "sha256:a2db49c2ce024df7f5a742c9a312ca06a5a8d4982e65090eab58fa58c3ced022"
+                "sha256:a8d4cda16b7fbf2ce246206335fa84598bb8a6bb1e395c45c2258f312c4ffd90",
+                "sha256:f1b8945d6d693589beaff592262e4bde8baf8f1f980a01615edbff513a7a6574"
             ],
             "index": "pypi",
-            "version": "==0.0.173"
+            "version": "==0.0.174"
         },
         "lit": {
             "hashes": [
@@ -1339,7 +1339,7 @@
                 "sha256:993f1a3599ca3f4fcd7160c7545ad06310c9e12f70174ae7ae8d4e25f6c5d3fa",
                 "sha256:d260dda9ae781e1eab6ea15bacb84015849833ba5555f141d2d9b7b7473b307d"
             ],
-            "markers": "python_version >= '3.6'",
+            "index": "pypi",
             "version": "==1.0.1"
         },
         "pypdf2": {
@@ -1349,13 +1349,6 @@
             ],
             "index": "pypi",
             "version": "==3.0.1"
-        },
-        "pyperclip": {
-            "hashes": [
-                "sha256:105254a8b04934f0bc84e9c24eb360a591aaf6535c9def5f29d92af107a9bf57"
-            ],
-            "index": "pypi",
-            "version": "==1.8.2"
         },
         "pyrsistent": {
             "hashes": [
@@ -2200,14 +2193,5 @@
             "version": "==3.15.0"
         }
     },
-    "develop": {
-        "pympler": {
-            "hashes": [
-                "sha256:993f1a3599ca3f4fcd7160c7545ad06310c9e12f70174ae7ae8d4e25f6c5d3fa",
-                "sha256:d260dda9ae781e1eab6ea15bacb84015849833ba5555f141d2d9b7b7473b307d"
-            ],
-            "markers": "python_version >= '3.6'",
-            "version": "==1.0.1"
-        }
-    }
+    "develop": {}
 }

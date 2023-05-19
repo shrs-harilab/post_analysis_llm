@@ -1,10 +1,14 @@
-
 import streamlit as st
 from utils.cached_resources import load_collections
 from knowledge_base.create_prompt import create_prompt
-from utils.utilities import copy_prompt
 
 
+st.set_page_config(
+    page_title="Auto Prompt",
+    initial_sidebar_state="collapsed",
+    page_icon="🤖",
+    menu_items={"Report a Bug": "mailto:suh46@pitt.edu"},
+)
 vector_stores = load_collections()
 search_query = st.text_area(
     "Question",
@@ -22,9 +26,14 @@ with col2:
 with col3:
     collection_option = st.selectbox("From collection:", vector_stores.keys())
 
-search_results = vector_stores[collection_option].similarity_search_with_score(search_query, k = search_result_size)
+search_results = vector_stores[collection_option].similarity_search_with_score(
+    search_query, k=search_result_size
+)
 
-prompt = create_prompt(search_query, context_text, [(hit[0].metadata["source"], hit[0].page_content) for hit in search_results], prompt_size)
-    
-st.button("Copy prompt", on_click=copy_prompt, args=(prompt,))
-st.text(prompt)
+prompt = create_prompt(
+    search_query,
+    context_text,
+    [(hit[0].metadata["source"], hit[0].page_content) for hit in search_results],
+    prompt_size,
+)
+st.code(prompt, language=None)
