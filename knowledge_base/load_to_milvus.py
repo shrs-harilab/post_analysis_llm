@@ -56,8 +56,7 @@ if __name__ == "__main__":
 
     # create schema if not exists
     try:
-        collection = Collection(COLLECTION_NAME)
-        collection.drop()
+        Collection(COLLECTION_NAME).drop()
     except:
         pass
     # creat schema
@@ -71,8 +70,7 @@ if __name__ == "__main__":
                 FieldSchema(name="source", dtype=DataType.VARCHAR, max_length=1024),
                 FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=65535),
                 FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=384),
-            ],
-            COLLECTION_NAME,
+            ]
         ),
     )
     index = {
