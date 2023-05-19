@@ -1,1 +1,1 @@
-WORKON_HOME=/hi/hari pipenv shell
+WORKON_HOME=/hi/hari/projects/post_analysis_llm pipenv shell
