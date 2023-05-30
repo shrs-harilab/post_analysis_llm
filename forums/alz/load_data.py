@@ -49,5 +49,7 @@ for doc in tqdm(collection.find({}), desc="load collection from db"):
 sorted_data = {url: sorted(docs, key=lambda x: x["date"]) for url, docs in data.items()}
 
 
-with open(os.path.join(os.path.dirname(__file__), f"{COLLECTION_NAME}.pkl"), "wb") as output_file:
+with open(
+    os.path.join(os.path.dirname(__file__), f"{COLLECTION_NAME}.pkl"), "wb"
+) as output_file:
     pickle.dump(sorted_data, output_file)

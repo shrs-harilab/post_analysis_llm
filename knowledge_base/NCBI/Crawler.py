@@ -12,6 +12,7 @@ import numpy as np
 from math import ceil
 from argparse import ArgumentParser
 
+
 class PubMedCrawler:
     def __init__(self, term: str):
         Entrez.email = os.environ.get("ENTREZ_EMAIL")
@@ -23,7 +24,11 @@ class PubMedCrawler:
         self._PDFDIR = os.path.join(self._DIR, "pdfs")
         self._create_dir()
         self.logger = logging.Logger(__name__)
-        self.logger.addHandler(logging.FileHandler(os.path.join(self._DIR, f"{self.__class__.__name__}.log")))
+        self.logger.addHandler(
+            logging.FileHandler(
+                os.path.join(self._DIR, f"{self.__class__.__name__}.log")
+            )
+        )
 
     def crawl(self, crawl_num: int):
         lack = crawl_num
@@ -35,7 +40,7 @@ class PubMedCrawler:
                 lack = crawl_num - len(self._tasks)
                 i += step
                 pbar.update(n=result if lack >= 0 else crawl_num - pbar.last_print_n)
-        with WorkerPool(cpu_count()+1) as pool:
+        with WorkerPool(cpu_count() + 1) as pool:
             pool.map(
                 self._consume,
                 make_single_arguments(self._tasks[:crawl_num], generator=False),
@@ -47,7 +52,7 @@ class PubMedCrawler:
             desc="Recording Details",
         ):
             self._record_details(batch)
-        
+
         self._to_file()
 
     def _consume(self, task: dict):
@@ -56,7 +61,9 @@ class PubMedCrawler:
                 task["url"], headers={"User-Agent": "Chrome/111.0.0.0"}
             )
             if response.status_code == requests.codes.ok:
-                with open(os.path.join(self._PDFDIR, f"{task['pmid']}.pdf"), "wb") as file:
+                with open(
+                    os.path.join(self._PDFDIR, f"{task['pmid']}.pdf"), "wb"
+                ) as file:
                     file.write(response.content)
         except Exception as e:
             self.logger.error(f"URL: {task['url']}, EXCEPTION: {e}")

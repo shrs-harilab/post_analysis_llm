@@ -1,7 +1,8 @@
 import typing
 import PyPDF2
 
-def merge_line_to_paragraph(lines:typing.List[str]):
+
+def merge_line_to_paragraph(lines: typing.List[str]):
     paragraphs = []
     current_paragraph = []
     for line in lines:
@@ -25,7 +26,8 @@ def merge_line_to_paragraph(lines:typing.List[str]):
         paragraphs.append(paragraph)
     return paragraphs
 
-def parse_paragraphs_from_pdf(input_filepath:str):
+
+def parse_paragraphs_from_pdf(input_filepath: str):
     reader = PyPDF2.PdfReader(input_filepath)
     lines = []
     for page in reader.pages:
@@ -35,7 +37,7 @@ def parse_paragraphs_from_pdf(input_filepath:str):
     return merge_line_to_paragraph(lines)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # input_filepath = "/Users/zhendongwang/Downloads/UB-CAM_Training-Manual.pdf"
     # input_filepath = "/Users/zhendongwang/Downloads/FAMCAM_TrainingManual.pdf"
     input_filepath = "/Users/zhendongwang/Downloads/Sour Seven Validation Study.pdf"
@@ -43,11 +45,3 @@ if __name__ == '__main__':
     for paragraph in parse_paragraphs_from_pdf(input_filepath):
         print(paragraph)
         print("-----")
-
-
-
-
-
-
-
-
