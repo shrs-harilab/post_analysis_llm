@@ -1,9 +1,7 @@
 import os
-
 import numpy as np
 from tqdm import tqdm
-
-from parse_paragraph_from_pdf import parse_paragraphs_from_pdf
+from knowledge_base.NCBI.parse_paragraph_from_pdf import parse_paragraphs_from_pdf
 from pymilvus import (
     connections,
     FieldSchema,

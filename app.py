@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.cached_resources import load_collections
-from knowledge_base.create_prompt import create_prompt
+from utils.utilities import create_prompt
 
 
 st.set_page_config(
