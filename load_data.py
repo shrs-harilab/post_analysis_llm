@@ -8,8 +8,8 @@ from tqdm import tqdm
 
 load_dotenv()
 
-USERNAME = urllib.parse.quote(os.environ.get("MONGO_USERNAME"))
-PASSWORD = urllib.parse.quote(os.environ.get("MONGO_PASSWORD"))
+USERNAME = urllib.parse.quote_plus(os.environ.get("MONGO_USERNAME"))
+PASSWORD = urllib.parse.quote_plus(os.environ.get("MONGO_PASSWORD"))
 connection_url = f"mongodb+srv://{USERNAME}:{PASSWORD}@socialmediadatabase.gihvf.mongodb.net/?retryWrites=true&w=majority"
 
 

@@ -27,6 +27,7 @@ share/python-wheels/
 MANIFEST
 
 knowledge_base/pdfs/*.pdf
+knowledge_base/digital_literacy/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -161,3 +162,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 /volumes/
+
+*.pkl
+*.xlsx
+.vscode/

@@ -2,10 +2,10 @@
 
 
 
-## Getting start
-Create an virtual environment for python 3.8.8
+## Getting Start (Local)
+Create an virtual environment for python
 
-Install dependencies
+Install dependencies in the virtual environment
 ```shell
 pip install -r requirements.txt
 ```
@@ -28,6 +28,7 @@ docker compose up
 * run ```python -m streamlit run analyze_als.py``` and it will open the semantic search interface
 
 # Scraping PubMed (PMC free full-text) to load to the knowledge base
+* add PDF_CRAWL_NUM in .env in order to set numbers of document to crawl
 * run ```python run crawl_pubmed.py``` and it will start crawling the pdfs and load them to the knowledge_base/pdfs
 
 # Knowledge base
@@ -38,4 +39,7 @@ docker compose up
 
 ## Start auto prompt creation UI
 * run ```python -m streamlit run knowledge_base/auto_generate_prompt.py```
-```
+
+## Start the newest auto prompt creation UI
+* run ```python -m streamlit run app.py```
+

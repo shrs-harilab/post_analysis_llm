@@ -7,14 +7,16 @@ import asyncio
 import time
 import aiofiles
 from asyncio import Semaphore, gather, run, wait_for
+from dotenv import load_dotenv
+import os
 
-
+load_dotenv()
 # Get searched results
 def search(query):
     Entrez.email = 'hah90@pitt.edu'
     handle = Entrez.esearch(db='pubmed',
                             sort='relevance',
-                            retmax='10000',
+                            retmax=os.environ.get("PDF_CRAWL_NUM", "10000"),
                             retmode='xml',
                             term=query)
     results = Entrez.read(handle)
