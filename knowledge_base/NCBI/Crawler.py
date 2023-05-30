@@ -10,7 +10,7 @@ import logging
 import pandas as pd
 import numpy as np
 from math import ceil
-
+from argparse import ArgumentParser
 
 class PubMedCrawler:
     def __init__(self, term: str):
@@ -19,10 +19,11 @@ class PubMedCrawler:
         self._term = term
         self._tasks = list()
         self._details = list()
-        self._PDFDIR = os.path.join(os.path.dirname(__file__), "pdfs")
+        self._DIR = os.path.dirname(__file__)
+        self._PDFDIR = os.path.join(self._DIR, "pdfs")
         self._create_dir()
         self.logger = logging.Logger(__name__)
-        self.logger.addHandler(logging.FileHandler(f"{self.__class__.__name__}.log"))
+        self.logger.addHandler(logging.FileHandler(os.path.join(self._DIR, f"{self.__class__.__name__}.log")))
 
     def crawl(self, crawl_num: int):
         lack = crawl_num
@@ -34,7 +35,7 @@ class PubMedCrawler:
                 lack = crawl_num - len(self._tasks)
                 i += step
                 pbar.update(n=result if lack >= 0 else crawl_num - pbar.last_print_n)
-        with WorkerPool(cpu_count()) as pool:
+        with WorkerPool(cpu_count()+1) as pool:
             pool.map(
                 self._consume,
                 make_single_arguments(self._tasks[:crawl_num], generator=False),
@@ -46,17 +47,19 @@ class PubMedCrawler:
             desc="Recording Details",
         ):
             self._record_details(batch)
+        
+        self._to_file()
 
     def _consume(self, task: dict):
         try:
             response = requests.get(
                 task["url"], headers={"User-Agent": "Chrome/111.0.0.0"}
             )
+            if response.status_code == requests.codes.ok:
+                with open(os.path.join(self._PDFDIR, f"{task['pmid']}.pdf"), "wb") as file:
+                    file.write(response.content)
         except Exception as e:
             self.logger.error(f"URL: {task['url']}, EXCEPTION: {e}")
-        if response.status_code == requests.codes.ok:
-            with open(os.path.join(self._PDFDIR, f"{task['pmid']}.pdf"), "wb") as file:
-                file.write(response.content)
 
     def _search(self, retstart: int, retmax: int) -> int:
         handle = Entrez.esearch(
@@ -115,7 +118,7 @@ class PubMedCrawler:
 
     def _to_file(self):
         df = pd.DataFrame(self._tasks)
-        df.to_excel("pubmed_search.xlsx")
+        df.to_excel(os.path.join(self._DIR, "pubmed_search.xlsx"))
 
     def _create_dir(self):
         if os.path.exists(self._PDFDIR):
@@ -125,5 +128,9 @@ class PubMedCrawler:
 
 if __name__ == "__main__":
     load_dotenv()
-    crawler = PubMedCrawler("delirium")
-    crawler.crawl(50)
+    parser = ArgumentParser()
+    parser.add_argument("-t", "--term", default="delirium")
+    parser.add_argument("-n", "--num", type=int, default=30)
+    args = parser.parse_args()
+    crawler = PubMedCrawler(args.term)
+    crawler.crawl(args.num)
