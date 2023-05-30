@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+pymilvus = "*"
+sentence-transformers = "*"
+tqdm = "*"
+pymongo = "*"
+numpy = "*"
+streamlit = "*"
+pyperclip = "*"
+pypdf2 = "*"
+pandas = "*"
+requests = "*"
+aiohttp = "*"
+aiofiles = "*"
+mpire = "*"
+biopython = "*"
+langchain = "*"
+xlsxwriter = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
