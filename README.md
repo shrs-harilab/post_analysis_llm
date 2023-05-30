@@ -2,10 +2,10 @@
 
 
 
-## Getting start
-Create an virtual environment for python 3.8.8
+## Getting Start (Local)
+Create an virtual environment for python
 
-Install dependencies
+Install dependencies in the virtual environment
 ```shell
 pip install -r requirements.txt
 ```

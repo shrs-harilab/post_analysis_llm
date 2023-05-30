@@ -11,7 +11,6 @@ tqdm = "*"
 pymongo = "*"
 numpy = "*"
 streamlit = "*"
-pyperclip = "*"
 pypdf2 = "*"
 pandas = "*"
 requests = "*"
@@ -21,6 +20,7 @@ mpire = "*"
 biopython = "*"
 langchain = "*"
 xlsxwriter = "*"
+pympler = "*"
 
 [dev-packages]
 
