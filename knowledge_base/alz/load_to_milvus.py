@@ -1,10 +1,9 @@
-import json
 import numpy as np
-
 from pymilvus import connections, FieldSchema, DataType, CollectionSchema, Collection
 from sentence_transformers import SentenceTransformer
 import pickle
 from tqdm import tqdm
+import os
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
@@ -14,12 +13,12 @@ connect = connections.connect(
   port='19530'
 )
 
-ALS_COLLECTION_NAME = "als"
+ALZ_COLLECTION_NAME = "alz"
 
 # create schema if not exists
 try:
-    collection = Collection(ALS_COLLECTION_NAME)
-    collection.drop()
+    Collection(ALZ_COLLECTION_NAME).drop()
+    Collection("als").drop()
 except:
     pass
 ## creat schema
@@ -30,10 +29,10 @@ fields = [
         FieldSchema(name="text", dtype=DataType.VARCHAR,max_length=65535),
         FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=384)
     ]
-schema = CollectionSchema(fields, "als")
-collection = Collection("als", schema)
+schema = CollectionSchema(fields)
+collection = Collection(ALZ_COLLECTION_NAME, schema)
 
-data_file = "./AlzConnected.pkl"
+data_file = os.path.join(os.path.dirname(__file__), "AlzConnected.pkl")
 with open(data_file,"rb") as input_file:
     data = np.array([(k,v) for k,v in pickle.load(input_file).items()], dtype=object)
 
@@ -58,28 +57,6 @@ index = {
     "params": {"nlist": 100},
 }
 collection.create_index("vector", index)
-
-
-
-# query
-# collection = Collection("als")
-# collection.load()
-#
-#
-# def search(text:str,k:int = 5):
-#     vectors_to_search = model.encode([text])
-#     search_params = {
-#         "metric_type": "L2",
-#         "params": {"nprobe": 10},
-#     }
-#     result = collection.search(vectors_to_search, "embeddings", search_params, limit=k, output_fields=["id","title", "text"])
-#     hits = result[0]
-#     print(f"hits: {len(hits)}")
-#     for hit in hits:
-#         print(f"{hit.id} ({hit.score}): {hit.entity.title}")
-#
-#
-# search("Smart device")
 
 
 
