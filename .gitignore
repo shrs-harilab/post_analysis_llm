@@ -165,4 +165,5 @@ cython_debug/
 
 *.pkl
 *.xlsx
-.vscode/
+.vscode
+*.pdf
