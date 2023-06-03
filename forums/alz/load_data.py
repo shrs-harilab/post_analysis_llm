@@ -21,7 +21,7 @@ client = pymongo.MongoClient(
 
 
 DATABASE_NAME = "SocialMediaCaregivingResearch"
-COLLECTION_NAME = "AlzConnected"
+COLLECTION_NAME = "AlzConnected-v2"
 db = client[DATABASE_NAME]
 collection = db[COLLECTION_NAME]
 
@@ -29,7 +29,7 @@ collection = db[COLLECTION_NAME]
 def parse_document(doc: dict, collection: str):
     return {
         "id": str(doc["_id"]),
-        "date": doc["date"],
+        "date": doc["datetime"],
         "collection": collection,
         "url": doc["url"],
         "title": doc["title"],

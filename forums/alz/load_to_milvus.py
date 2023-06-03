@@ -41,7 +41,7 @@ collection = Collection(
     ),
 )
 
-data_file = os.path.join(os.path.dirname(__file__), "AlzConnected.pkl")
+data_file = os.path.join(os.path.dirname(__file__), "AlzConnected-v2.pkl")
 with open(data_file, "rb") as input_file:
     data = np.array([(k, v) for k, v in pickle.load(input_file).items()], dtype=object)
 
