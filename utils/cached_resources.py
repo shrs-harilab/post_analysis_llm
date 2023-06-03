@@ -9,7 +9,7 @@ def load_collections() -> dict[str, Milvus]:
     embeddings.encode_kwargs = dict(normalize_embeddings=True)
     connection_args = {"host": "localhost", "port": "19530"}
     search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
-    vector_stores = dict.fromkeys(["alz", "pdf"])
+    vector_stores = dict.fromkeys(["alz", "pdf", "alz_v1"])
     for collection in vector_stores.keys():
         vector_store = Milvus(
             embedding_function=embeddings,
