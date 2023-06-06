@@ -22,7 +22,7 @@ COLLECTION_NAME = "alz_v1"
 # create schema if not exists
 try:
     Collection(COLLECTION_NAME).drop()
-    Collection("als").drop()
+    Collection("alz").drop()
 except MilvusException as e:
     print(e)
 
