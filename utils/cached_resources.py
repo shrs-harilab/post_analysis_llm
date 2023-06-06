@@ -1,6 +1,7 @@
 from langchain.embeddings import SentenceTransformerEmbeddings
 from langchain.vectorstores import Milvus
 import streamlit as st
+from pymilvus import connections, utility
 
 
 @st.cache_resource
@@ -9,13 +10,16 @@ def load_collections() -> dict[str, Milvus]:
     embeddings.encode_kwargs = dict(normalize_embeddings=True)
     connection_args = {"host": "localhost", "port": "19530"}
     search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
-    vector_stores = dict.fromkeys(["alz", "pdf", "alz_v1"])
-    for collection in vector_stores.keys():
-        vector_store = Milvus(
-            embedding_function=embeddings,
-            collection_name=collection,
-            connection_args=connection_args,
-            search_params=search_params,
-        )
-        vector_stores[collection] = vector_store
+    collections = ["alz_1", "alz_v2", "pdf"]
+    vector_stores = dict()
+    connections.connect(**connection_args)
+    for collection in collections:
+        if utility.has_collection(collection):
+            vector_store = Milvus(
+                embedding_function=embeddings,
+                collection_name=collection,
+                connection_args=connection_args,
+                search_params=search_params,
+            )
+            vector_stores[collection] = vector_store
     return vector_stores

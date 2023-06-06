@@ -1,4 +1,4 @@
-# Prompt Enigneer for Multiple Knowledge or Forums
+# Prompt Enigneer and Semantic Search for Multiple Knowledge or Forums
 
 ## Getting Start
 Create an virtual environment for python

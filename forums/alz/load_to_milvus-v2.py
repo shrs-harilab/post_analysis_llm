@@ -17,7 +17,7 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 
 connect = connections.connect(alias="default", host="localhost", port="19530")
 
-COLLECTION_NAME = "alz"
+COLLECTION_NAME = "alz_v2"
 
 # create schema if not exists
 try:
