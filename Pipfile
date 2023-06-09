@@ -21,6 +21,8 @@ biopython = "*"
 langchain = "*"
 xlsxwriter = "*"
 pympler = "*"
+tiktoken = "*"
+openai = "*"
 
 [dev-packages]
 black = "*"
