@@ -7,22 +7,26 @@ from pymilvus import (
     CollectionSchema,
     Collection,
     MilvusException,
+    utility,
 )
 from sentence_transformers import SentenceTransformer
 import pickle
 from tqdm import tqdm
 import os
+from pympler.asizeof import asizeof
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 connect = connections.connect(alias="default", host="localhost", port="19530")
 
-COLLECTION_NAME = "alz_v1"
+COLLECTION_NAME = "alz"
+collection_drops = ["alz_v1", "alz_v2", "als", COLLECTION_NAME]
 
 # create schema if not exists
 try:
-    Collection(COLLECTION_NAME).drop()
-    Collection("alz").drop()
+    for collection_drop in collection_drops:
+        if utility.has_collection(collection_drop):
+            Collection(collection_drop).drop()
 except MilvusException as e:
     print(e)
 
@@ -44,7 +48,6 @@ collection = Collection(
 data_file = os.path.join(os.path.dirname(__file__), "AlzConnected.pkl")
 with open(data_file, "rb") as input_file:
     data = np.array([(k, v) for k, v in pickle.load(input_file).items()], dtype=object)
-
 
 for batch in tqdm(np.array_split(data, 128)):
     titles = [x[1][0]["title"][:65534] for x in batch]

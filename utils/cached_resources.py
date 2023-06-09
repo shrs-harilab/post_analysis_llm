@@ -10,7 +10,7 @@ def load_collections() -> dict[str, Milvus]:
     embeddings.encode_kwargs = dict(normalize_embeddings=True)
     connection_args = {"host": "localhost", "port": "19530"}
     search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
-    collections = ["alz_v1", "alz_v2", "pdf"]
+    collections = ["alz", "pdf"]
     vector_stores = dict()
     connections.connect(**connection_args)
     for collection in collections:

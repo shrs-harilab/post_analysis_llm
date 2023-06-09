@@ -9,6 +9,7 @@ from pymilvus import (
     CollectionSchema,
     Collection,
     MilvusException,
+    utility,
 )
 from sentence_transformers import SentenceTransformer
 from mpire import WorkerPool
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         show_progress_bar=True,
     )
     data = [sources, paragraphs, embeddings]
+    # split data to insert into milvus, can't exceed 64MB per insert
     partition_num = round(asizeof(data) / (pow(1024, 2) * 64)) + 1
     print(f"Total data to insert: {asizeof(data)/pow(1024, 3)} GB")
     for i in range(len(data)):
