@@ -29,3 +29,10 @@ docker compose up
 ## Start the Auto Prompt Creation UI
 * run ```python -m streamlit run app.py```
 
+# TODO
+## Resturcture DB
+* Consistent collection
+* relational db needed?
+## Upgrade Packages
+* pypdf2 -> pypdf
+
