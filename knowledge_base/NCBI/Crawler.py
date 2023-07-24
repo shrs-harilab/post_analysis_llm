@@ -11,49 +11,53 @@ import pandas as pd
 import numpy as np
 from math import ceil
 from argparse import ArgumentParser
+import math
 
 
 class PubMedCrawler:
-    def __init__(self, term: str):
+    def __init__(self, dir: str, max_crawl_num: int = 10000):
         Entrez.email = os.environ.get("ENTREZ_EMAIL")
         Entrez.api_key = os.environ.get("ENTREZ_API_KEY")
-        self._term = term
-        self._tasks = list()
-        self._details = list()
-        self._DIR = os.path.dirname(__file__)
-        self._PDFDIR = os.path.join(self._DIR, "pdfs")
+        self.max_crawl_num = max_crawl_num
+        self.tasks = list()
+        self.details = list()
+        self.DIR = os.path.dirname(__file__)
+        self.PDFDIR = os.path.join(self.DIR, "pdfs", dir)
         self._create_dir()
         self.logger = logging.Logger(__name__)
         self.logger.addHandler(
             logging.FileHandler(
-                os.path.join(self._DIR, f"{self.__class__.__name__}.log")
+                os.path.join(self.DIR, f"{self.__class__.__name__}.log"), mode="w"
             )
         )
 
-    def crawl(self, crawl_num: int):
-        lack = crawl_num
+    def crawl(self, term: str):
+        self.term = term
         step = 200
-        with tqdm(total=lack, desc="Fetching Records") as pbar:
+        with tqdm(total=self.max_crawl_num, desc="Searching Records") as pbar:
             i = 0
-            while lack > 0:
-                result = self._search(i, step)
-                lack = crawl_num - len(self._tasks)
+            for _ in range(math.floor(self.max_crawl_num / step)):
+                self._search(i, step)
                 i += step
-                pbar.update(n=result if lack >= 0 else crawl_num - pbar.last_print_n)
-        with WorkerPool(cpu_count() + 1) as pool:
+                pbar.update(step)
+            mod = self.max_crawl_num % step
+            if mod > 0:
+                self._search(i, mod)
+                pbar.update(mod)
+        with WorkerPool(math.floor(cpu_count() / 2) + 1) as pool:
             pool.map(
                 self._consume,
-                make_single_arguments(self._tasks[:crawl_num], generator=False),
+                make_single_arguments(self.tasks, generator=False),
                 progress_bar=True,
                 progress_bar_options={"desc": "Downloading Files"},
             )
         for batch in tqdm(
-            np.array_split(self._tasks, ceil(len(self._tasks) / step)),
+            np.array_split(self.tasks, ceil(len(self.tasks) / step)),
             desc="Recording Details",
         ):
             self._record_details(batch)
 
-        self._to_file()
+        self.save_records_to_file()
 
     def _consume(self, task: dict):
         try:
@@ -62,7 +66,7 @@ class PubMedCrawler:
             )
             if response.status_code == requests.codes.ok:
                 with open(
-                    os.path.join(self._PDFDIR, f"{task['pmid']}.pdf"), "wb"
+                    os.path.join(self.PDFDIR, f"{task['pmid']}.pdf"), "wb"
                 ) as file:
                     file.write(response.content)
         except Exception as e:
@@ -71,7 +75,7 @@ class PubMedCrawler:
     def _search(self, retstart: int, retmax: int) -> int:
         handle = Entrez.esearch(
             db="pubmed",
-            term=self._term,
+            term=self.term,
             sort="relevance",
             retstart=retstart,
             retmax=retmax,
@@ -79,7 +83,7 @@ class PubMedCrawler:
         )
         records = Entrez.read(handle)
         handle.close()
-        return self._link(records["IdList"])
+        self._link(records["IdList"])
 
     def _record_details(self, tasks: list[dict]):
         handle = Entrez.efetch(
@@ -104,40 +108,44 @@ class PubMedCrawler:
             )
 
     def _link(self, pmid: list) -> int:
-        ids = ",".join(pmid)
         handle = Entrez.elink(
-            dbfrom="pubmed", db="pmc", linkname="pubmed_pmc", id=ids, cmd="prlinks"
+            dbfrom="pubmed",
+            db="pmc",
+            linkname="pubmed_pmc",
+            id=",".join(pmid),
+            cmd="prlinks",
         )
         result = Entrez.read(handle)
         handle.close()
-        get = 0
         for idurl in result[0]["IdUrlList"]["IdUrlSet"]:
             for obj in idurl["ObjUrl"]:
                 if obj["Provider"]["NameAbbr"] == "PMC":
-                    self._tasks.append(
+                    self.tasks.append(
                         {
                             "pmid": idurl["Id"],
                             "url": obj["Url"] + "pdf",
                         }
                     )
-                    get += 1
-        return get
 
-    def _to_file(self):
-        df = pd.DataFrame(self._tasks)
-        df.to_excel(os.path.join(self._DIR, "pubmed_search.xlsx"))
+    def save_records_to_file(self):
+        df = pd.DataFrame(self.tasks)
+        df.to_excel(os.path.join(self.DIR, "pubmed_search.xlsx"))
 
     def _create_dir(self):
-        if os.path.exists(self._PDFDIR):
-            shutil.rmtree(self._PDFDIR)
-        os.mkdir(self._PDFDIR)
+        if os.path.exists(self.PDFDIR):
+            shutil.rmtree(self.PDFDIR)
+        os.makedirs(self.PDFDIR)
 
 
 if __name__ == "__main__":
     load_dotenv()
     parser = ArgumentParser()
     parser.add_argument("-t", "--term", default="delirium")
+    parser.add_argument("-d", "--dir")
     parser.add_argument("-n", "--num", type=int, default=30)
     args = parser.parse_args()
-    crawler = PubMedCrawler(args.term)
-    crawler.crawl(args.num)
+    crawler = PubMedCrawler(
+        dir=args.dir if args.dir else "_".join(args.term.split()),
+        max_crawl_num=args.num,
+    )
+    crawler.crawl(args.term)
